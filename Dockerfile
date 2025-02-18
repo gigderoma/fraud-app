@@ -1,6 +1,14 @@
+
+# Create a virtual environment
 FROM python:3.10.4
 
 WORKDIR /tmp
+
+# Create a virtual environment
+RUN python3 -m venv .venv
+
+# Activate the virtual environment
+RUN source .venv/bin/activate
 
 COPY . /tmp
 
@@ -16,6 +24,10 @@ ENV PYTHONIOENCODING=UTF-8
 RUN pip install --upgrade httpx httpcore
 
 RUN pip install -r requirements.txt
+
+# (Optional) For debugging:
+RUN pip freeze | grep httpx > httpx_version.txt
+RUN pip freeze | grep httpcore > httpcore_version.txt
 
 ENV GRADIO_SERVER_PORT=8080
 ENV GRADIO_SERVER_NAME=0.0.0.0
