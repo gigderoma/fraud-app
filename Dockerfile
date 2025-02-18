@@ -1,8 +1,10 @@
 FROM python:3.10-slim
 
+USER 1001
+
 WORKDIR /tmp
 
-COPY . /tmp
+COPY --chown=1001:0 . /tmp
 
 RUN pip install -r requirements.txt
 
