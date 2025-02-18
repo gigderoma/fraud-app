@@ -4,6 +4,7 @@ import requests
 import json
 import gradio as gr
 import numpy as np
+import traceback
 
 # Get a few environment variables. These are so we:
 # - Know what endpoint we should request
@@ -28,10 +29,20 @@ def predict(distance_from_home,distance_from_last_transaction,ratio_to_median_pu
         'content-type': 'application/json'
     }
 
-    response = requests.post(URL, json=payload, headers=headers)
-    prediction = response.json()['outputs'][0]['data'][0]
 
-    return "Fraud" if prediction >=0.995 else "Not fraud"
+    try:
+        response = requests.post(URL, json=payload, headers=headers)
+        response.raise_for_status()  # Raise an exception for bad status codes (4xx or 5xx)
+        prediction = response.json()['outputs'][0]['data'][0]
+        return "Fraud" if prediction >= 0.995 else "Not fraud"
+    except requests.exceptions.RequestException as e:
+        print(f"Error making request: {e}")
+        traceback.print_exc()  # Print the full traceback for debugging
+        return "Error: Could not connect to inference endpoint"  # Or a more informative message
+    except (KeyError, IndexError, json.JSONDecodeError) as e:
+        print(f"Error parsing response: {e}")
+        traceback.print_exc()
+        return "Error: Invalid response from inference endpoint"
 
 
 # Create and launch a Gradio interface that uses the prediction function to predict an output based on the inputs. 
