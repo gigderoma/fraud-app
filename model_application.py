@@ -15,9 +15,10 @@ with open('scaler.pkl', 'rb') as handle:
 # Get a few environment variables. These are so we:
 # - Know what endpoint we should request
 # - Set server name and port for Gradio
-URL = os.getenv("INFERENCE_ENDPOINT")                       # You need to manually set this with an environment variable
-GRADIO_SERVER_PORT = int(os.getenv("GRADIO_SERVER_PORT"))   # Automatically set by the Dockerfile
-GRADIO_SERVER_NAME = os.getenv("GRADIO_SERVER_NAME")        # Automatically set by the Dockerfile
+
+GRADIO_SERVER_PORT = int(os.environ.get("GRADIO_SERVER_PORT", 8080))  # Provide default if not set by Dockerfile
+GRADIO_SERVER_NAME = os.environ.get("GRADIO_SERVER_NAME", "0.0.0.0") # Provide default if not set  by Dockerfile
+URL = os.environ.get("INFERENCE_ENDPOINT") # Provide default if not set
 
 
 def predict(distance_from_home, distance_from_last_transaction, ratio_to_median_purchase_price, repeat_retailer, used_chip, used_pin_number, online_order):
