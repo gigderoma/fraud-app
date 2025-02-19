@@ -32,7 +32,20 @@ def predict(distance_from_home,distance_from_last_transaction,ratio_to_median_pu
 
     try:
         response = requests.post(URL, json=payload, headers=headers)
-        print(f"Response : {response}")
+        
+        # Print the status code (good practice)
+        print(f"Response Status Code: {response.status_code}")
+
+        # Print the response body (text-based)
+        print(f"Response Body (text): {response.text}")
+
+        # If you expect JSON, parse it and print it nicely
+        try:
+            response_json = response.json()  # Try to parse as JSON
+            print(f"Response Body (JSON): {json.dumps(response_json, indent=4)}") # Use json.dumps for pretty printing
+        except json.JSONDecodeError:
+            print("Response body is not valid JSON")
+            
         response.raise_for_status()  # Raise an exception for bad status codes (4xx or 5xx)
         prediction = response.json()['outputs'][0]['data'][0]
         return "Fraud" if prediction >= 0.995 else "Not fraud"
