@@ -1,4 +1,3 @@
-# Import the dependencies we need to run the code.
 import os
 import requests
 import json
@@ -7,20 +6,12 @@ import numpy as np
 import traceback
 import pickle
 
-
 # Load the scaler ONCE, outside the predict function
 with open('scaler.pkl', 'rb') as handle:
     scaler = pickle.load(handle)
 
+# ... (environment variables)
 
-# Get a few environment variables. These are so we:
-# - Know what endpoint we should request
-# - Set server name and port for Gradio
-URL = os.getenv("INFERENCE_ENDPOINT")                       # You need to manually set this with an environment variable
-GRADIO_SERVER_PORT = int(os.getenv("GRADIO_SERVER_PORT"))   # Automatically set by the Dockerfile
-GRADIO_SERVER_NAME = os.getenv("GRADIO_SERVER_NAME")        # Automatically set by the Dockerfile
-
-# Create a small function that sends data to the inference endpoint and recieves a prediction
 def predict(distance_from_home, distance_from_last_transaction, ratio_to_median_purchase_price, repeat_retailer, used_chip, used_pin_number, online_order):
     data = [distance_from_home, distance_from_last_transaction, ratio_to_median_purchase_price, repeat_retailer, used_chip, used_pin_number, online_order]
 
@@ -66,7 +57,6 @@ def predict(distance_from_home, distance_from_last_transaction, ratio_to_median_
         print(f"Error accessing data in response: {e}")
         traceback.print_exc()
         return "Error: Invalid response format"
-
 
 # Create and launch a Gradio interface that uses the prediction function to predict an output based on the inputs. 
 # We also set up a few example inputs to make it easier to try out the application.
