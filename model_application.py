@@ -16,13 +16,20 @@ GRADIO_SERVER_NAME = os.getenv("GRADIO_SERVER_NAME")        # Automatically set 
 
 # Create a small function that sends data to the inference endpoint and recieves a prediction
 def predict(distance_from_home,distance_from_last_transaction,ratio_to_median_purchase_price,repeat_retailer,used_chip,used_pin_number,online_order):
+
+   data = [distance_from_home,distance_from_last_transaction,ratio_to_median_purchase_price,repeat_retailer,used_chip,used_pin_number,online_order]
+    
+   with open('scaler.pkl', 'rb') as handle:
+         scaler = pickle.load(handle)
+   data_scaled =  scaler.transform([data]).tolist()[0]
+    
     payload = {
         "inputs": [
             {
                 "name": "dense_input", 
                 "shape": [1, 7], 
                 "datatype": "FP32",
-                "data": [[distance_from_home,distance_from_last_transaction,ratio_to_median_purchase_price,repeat_retailer,used_chip,used_pin_number,online_order]]
+                "data": data_scaled 
             },
             ]
         }
@@ -30,7 +37,7 @@ def predict(distance_from_home,distance_from_last_transaction,ratio_to_median_pu
         'content-type': 'application/json'
     }
 
-    with open('artifact/scaler.pkl', 'rb') as handle:
+    with open('scaler.pkl', 'rb') as handle:
          scaler = pickle.load(handle)
 
     try:
