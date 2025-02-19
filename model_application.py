@@ -5,6 +5,7 @@ import json
 import gradio as gr
 import numpy as np
 import traceback
+import pickle
 
 # Get a few environment variables. These are so we:
 # - Know what endpoint we should request
@@ -29,6 +30,8 @@ def predict(distance_from_home,distance_from_last_transaction,ratio_to_median_pu
         'content-type': 'application/json'
     }
 
+    with open('artifact/scaler.pkl', 'rb') as handle:
+         scaler = pickle.load(handle)
 
     try:
         response = requests.post(URL, json=payload, headers=headers)
@@ -40,11 +43,11 @@ def predict(distance_from_home,distance_from_last_transaction,ratio_to_median_pu
         print(f"Response Body (text): {response.text}")
 
         # If you expect JSON, parse it and print it nicely
-        try:
-            response_json = response.json()  # Try to parse as JSON
-            print(f"Response Body (JSON): {json.dumps(response_json, indent=4)}") # Use json.dumps for pretty printing
-        except json.JSONDecodeError:
-            print("Response body is not valid JSON")
+    
+        response_json = response.json()  # Try to parse as JSON
+        print(f"Response Body (JSON): {json.dumps(response_json, indent=4)}") # Use json.dumps for pretty printing
+    except json.JSONDecodeError:
+        print("Response body is not valid JSON")
             
         response.raise_for_status()  # Raise an exception for bad status codes (4xx or 5xx)
         prediction = response.json()['outputs'][0]['data'][0]
